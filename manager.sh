@@ -63,6 +63,7 @@ function iniciar_swarm(){
     docker swarm init --advertise-addr $1 | grep "docker swarm join --token" | sed "s/    //" > /root/.key_swarm
 }
 
+# shellcheck disable=SC2068
 validarParams $@
 echo '-->Comprobando si eres usuario root:'
 usuario_root
