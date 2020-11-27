@@ -6,7 +6,7 @@ function install_xfsprogs(){
         echo "-->Configurando el disco o particion ingresada..."
         mkfs.xfs -f -i size=2048 $1
         echo "-->Ingresando la particion en fstab.."
-        echo '$1 /mnt/osd xfs rw,noatime,inode64 0 0' >> /etc/fstab
+        echo $1 '/mnt/osd xfs rw,noatime,inode64 0 0' >> /etc/fstab
         echo "-->Creando carpetas en /mnt ..."
         existe_directorio "/mnt/osd"
         mkdir -p /mnt/osd && mount /mnt/osd
@@ -94,7 +94,7 @@ function configuracion_ceph(){
 
 function instalando_ceph(){
         pacman -S ceph
-        echo '$1:/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.ceph 0 0' >> /etc/fstab
+        echo $1 ':/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.ceph 0 0' >> /etc/fstab
 }
 
 function crear_carpeta_ceph(){
@@ -116,7 +116,6 @@ desplegando_ceph_swarm
 sleep 30
 echo "-->Comprobando salud de ceph"
 comprobar_salud_ceph
-comprobar_osd
 configuracion_ceph
 instalando_ceph $1
 crear_carpeta_ceph
