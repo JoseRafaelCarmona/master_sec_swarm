@@ -63,7 +63,7 @@ function desplegando_ceph_swarm(){
 
 function comprobar_salud_ceph(){
         HEALTH='NULL'
-        while [ $HEALTH != 'HEALTH_OK' ]; do
+        while [ $HEALTH != 'HEALTH_WARN' ]; do
                 HEALTH=$(docker exec -i `docker ps -qf name=ceph_mon` ceph -s | grep "health" | awk -F: '{print $2}')
                 echo "-->En espera..."
                 sleep 15
@@ -73,7 +73,7 @@ function comprobar_salud_ceph(){
 
 function comprobar_osd(){
         OSD='NULL'
-        while [ $OSD != '3' ]; do
+        while [ $OSD != '1' ]; do
                 OSD=$(docker exec -i `docker ps -qf name=ceph_mon` ceph -s | grep "osd:" | cut -d: -f 2 | cut -c 2)
                 echo "-->En espera de los OSD"
                 sleep 25
@@ -116,12 +116,9 @@ desplegando_ceph_swarm
 sleep 30
 echo "-->Comprobando salud de ceph"
 comprobar_salud_ceph
+comprobar_osd
 configuracion_ceph
 instalando_ceph $1
 crear_carpeta_ceph
 echo "-->listo"
 
-
-# Este es un comentario omitido
-
-#Este es un segundo comentario
