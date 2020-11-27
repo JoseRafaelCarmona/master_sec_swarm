@@ -78,3 +78,5 @@ permitir_root_login
 echo '-->Obteniendo llave swarm'
 iniciar_swarm $1
 echo 'INFO: ya puedes unir los nodos a este swarm'
+echo 'Iniciando la instalacion de ceph..'
+chmod +x ceph/install_ceph && ceph/install_ceph.sh
