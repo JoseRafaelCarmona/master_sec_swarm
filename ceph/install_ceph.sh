@@ -120,3 +120,6 @@ configuracion_ceph
 instalando_ceph $1
 crear_carpeta_ceph
 echo "-->listo"
+
+
+# Este es un comentario omitido
