@@ -107,7 +107,7 @@ install_xfsprogs $2
 obtener_llaves_ceph
 echo "-->Es correcto el contenido de este archivo?"
 sleep 5
-nano etc/ceph.conf
+#nano etc/ceph.conf
 generando_llaves_swarm
 echo "-->limpiando..."
 rm -r ./var ./etc

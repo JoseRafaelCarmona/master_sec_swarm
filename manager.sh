@@ -80,4 +80,4 @@ iniciar_swarm $1
 echo 'INFO: ya puedes unir los nodos a este swarm'
 echo 'Iniciando la instalacion de ceph..'
 chmod +x ceph/install_ceph.sh
-$(cd ceph/ ; sh ./install_ceph.sh)
+cd ceph/ && sh ./install_ceph.sh
