@@ -79,6 +79,7 @@ function iniciar_keepalived(){
     -e KEEPALIVED_VIRTUAL_IPS=192.168.16.200 \
     -e KEEPALIVED_PRIORITY=200 \
     osixia/keepalived
+    echo "--> keepalived listo"
 }
 
 validarParams "$@"
