@@ -94,7 +94,7 @@ function configuracion_ceph(){
 
 function instalando_ceph(){
         pacman -S ceph
-        echo $1 ':/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.ceph 0 0' >> /etc/fstab
+        echo $1':/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.ceph 0 0' >> /etc/fstab
 }
 
 function crear_carpeta_ceph(){
