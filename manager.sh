@@ -82,6 +82,12 @@ function iniciar_keepalived(){
     echo "--> keepalived listo"
 }
 
+function iniciar_redsuperpuesta(){
+  echo "--> Creado red"
+  docker network create --driver=overlay --attachable --subnet=172.16.200.0/24 traefik_public
+  echo "--> listo"
+}
+
 validarParams "$@"
 ip_master=$1
 punto_montaje=$2
@@ -107,4 +113,5 @@ chmod -R +x ceph/
 cd ceph/ && bash ./install_ceph.sh "$ip_master" "$punto_montaje"
 echo '---> Creando el contenedor de keepalived'
 iniciar_keepalived "$ip_master" "$interface" "$ip_future_worker"
-
+echo  '---> Creando red superpuesta'
+iniciar_redsuperpuesta
