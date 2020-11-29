@@ -115,3 +115,6 @@ echo '---> Creando el contenedor de keepalived'
 iniciar_keepalived "$ip_master" "$interface" "$ip_future_worker"
 echo  '---> Creando red superpuesta'
 iniciar_redsuperpuesta
+echo '--> Creando traefik'
+chmod +x traefik/install_traefik.sh
+cd traefik/ && ./install_traefik.sh
