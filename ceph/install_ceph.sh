@@ -115,8 +115,8 @@ sleep 2
 desplegando_ceph_swarm
 sleep 30
 echo "-->Comprobando salud de ceph"
-comprobar_salud_ceph
-comprobar_osd
+#comprobar_salud_ceph
+#comprobar_osd
 configuracion_ceph
 instalando_ceph $1
 crear_carpeta_ceph
