@@ -21,16 +21,16 @@ function validar(){
 function install_keepalived(){
          docker run -d --name keepalived --restart=always \
               --cap-add=NET_ADMIN --cap-add=NET_BROADCAST --cap-add=NET_RAW --net=host \
-              -e KEEPALIVED_INTERFACE=$5 \
-              -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:[$1,$2,$3]" \
-              -e KEEPALIVED_VIRTUAL_IPS=$4 \
+              -e KEEPALIVED_INTERFACE=$4 \
+              -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:[$1,$2]" \
+              -e KEEPALIVED_VIRTUAL_IPS=$3 \
               -e KEEPALIVED_PRIORITY=200 \
               osixia/keepalived
 }
 
-echo '--> Ingrese la direccion IP de un nodo'
-read IP_NODO1
-validar $IP_NODO1
-echo '--> Ingrese la direccion IP del segundo nodo'
-read IP_NODO2
-validar $IP_NODO2
+echo '--> Ingresa la direccion IP de un nodo:'
+read $IP_NODO
+validar $IP_NODO
+echo $2 > /root/.ip_virtual
+echo $IP_NODO > /root/.ip_nodo
+install_keepalived $1 $IP_NODO $2 $3

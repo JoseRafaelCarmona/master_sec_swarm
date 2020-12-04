@@ -70,18 +70,6 @@ function iniciar_swarm(){
     docker swarm init --advertise-addr $1 | grep "docker swarm join --token" | sed "s/    //" > /root/.key_swarm
 }
 
-function iniciar_keepalived(){
-    echo "--> Creando contenedor..."
-    docker run -d --name keepalived --restart=always \
-    --cap-add=NET_ADMIN --cap-add=NET_BROADCAST --cap-add=NET_RAW --net=host \
-    -e KEEPALIVED_INTERFACE=$2 \
-    -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:[$1, $3]" \
-    -e KEEPALIVED_VIRTUAL_IPS=192.168.16.200 \
-    -e KEEPALIVED_PRIORITY=200 \
-    osixia/keepalived
-    echo "--> keepalived listo"
-}
-
 function iniciar_redsuperpuesta(){
   echo "--> Creado red"
   docker network create --driver=overlay --attachable --subnet=172.16.200.0/24 traefik_public
@@ -112,7 +100,8 @@ chmod +x ceph/install_ceph.sh
 chmod -R +x ceph/
 cd ceph/ && bash ./install_ceph.sh "$ip_master" "$punto_montaje"
 echo '---> Creando el contenedor de keepalived'
-iniciar_keepalived "$ip_master" "$interface" "$ip_future_worker"
+chmod +x keepalived/install_keepalived.sh
+cd keepalived && bash ./install_keepalived.sh "$ip_master" "$ip_future_worker" "$interface"
 echo  '---> Creando red superpuesta'
 iniciar_redsuperpuesta
 echo '--> Creando traefik'
