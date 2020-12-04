@@ -117,4 +117,4 @@ services:
     secrets:
       - ceph.client.admin.keyring
     deploy:
-      replicas: 2
+      replicas: global
