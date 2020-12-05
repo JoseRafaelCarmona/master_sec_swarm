@@ -76,6 +76,36 @@ function iniciar_redsuperpuesta(){
   echo "--> listo"
 }
 
+function validar(){
+        if [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+                [[ ${$1[0]} -le 255 && ${$1[1]} -le 255 ${$1[2]} -le 255 && ${$1[3]} -le 255 ]]
+                if [ $? != '0' ]; then
+                        echo 'mal'
+                        exit 1;
+                fi
+        fi
+        echo 'OK'
+}
+
+function install_keepalived(){
+         docker run -d --name keepalived --restart=always \
+              --cap-add=NET_ADMIN --cap-add=NET_BROADCAST --cap-add=NET_RAW --net=host \
+              -e KEEPALIVED_INTERFACE=$4 \
+              -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:[$1,$2]" \
+              -e KEEPALIVED_VIRTUAL_IPS=$3 \
+              -e KEEPALIVED_PRIORITY=200 \
+              osixia/keepalived
+}
+
+function keepalived(){
+        echo '--> Ingresa la direccion virtual:'
+        read $IP_VIRTUAL
+        validar $IP_VIRTUAL
+        echo $IP_VIRTUAL > /root/.ip_virtual
+        echo $2 > /root/.ip_nodo
+        install_keepalived $1 $2 $IP_VIRTUAL $3
+}
+
 validarParams "$@"
 ip_master=$1
 punto_montaje=$2
@@ -100,8 +130,7 @@ chmod +x ceph/install_ceph.sh
 chmod -R +x ceph/
 cd ceph/ && bash ./install_ceph.sh "$ip_master" "$punto_montaje"
 echo '---> Creando el contenedor de keepalived'
-chmod -R +x keepalived/
-cd keepalived && bash ./install_keepalived.sh "$ip_master" "$ip_future_worker" "$interface"
+keepalived "$ip_master" "$ip_future_worker" "$interface"
 echo  '---> Creando red superpuesta'
 iniciar_redsuperpuesta
 echo '--> Creando traefik'
