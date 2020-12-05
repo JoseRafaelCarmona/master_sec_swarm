@@ -1,7 +1,7 @@
 #! /bin/bash
 
 function modoUso(){
-    echo 'Para ejecutar el script: manager.sh IP-MANAGER PUNTO-MONTAJE'
+    echo 'Para ejecutar el script: manager.sh IP-MANAGER PUNTO-MONTAJE INTERFACE-KEEPALIVED IP-FUTURO-NODO'
     echo 'Ejemplo: ./manager.sh 192.168.1.1 /dev/sda1'
 }
 
