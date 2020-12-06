@@ -86,7 +86,7 @@ function configuracion_ceph(){
         docker exec -i `docker ps -qf name=ceph_mon` ceph osd pool create cephfs_data 64
         docker exec -i `docker ps -qf name=ceph_mon` ceph osd pool create cephfs_metadata 64
         docker exec -i `docker ps -qf name=ceph_mon` ceph fs new cephfs cephfs_metadata cephfs_data
-        docker exec -i `docker ps -qf name=ceph_mon` ceph fs authorize cephfs client.swarm / rw | grep "key" | cut -d= -f2 > /root/.llave_ceph
+        docker exec -i `docker ps -qf name=ceph_mon` ceph fs authorize cephfs client.swarm / rw | grep key | awk '{print $3}' > /root/.llave_ceph
         sleep 10
         sed 's/ //' /root/.llave_ceph > /root/.ceph; rm /root/.llave_ceph
         docker exec -i `docker ps -qf name=ceph_mon` ceph osd pool set cephfs_data nodeep-scrub 1
