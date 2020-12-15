@@ -1,6 +1,8 @@
 #! /bin/bash
 
 function install_xfsprogs(){
+        echo "Iniciando actualizacion de paquetes"
+        pacman -Syu
         echo "-->Instalando el paquete xfsprogs desde pacman..."
         pacman -Sy xfsprogs
         echo "-->Configurando el disco o particion ingresada..."
