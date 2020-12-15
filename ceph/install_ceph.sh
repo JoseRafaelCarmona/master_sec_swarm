@@ -1,8 +1,6 @@
 #! /bin/bash
 
 function install_xfsprogs(){
-        echo "Iniciando actualizacion de paquetes"
-        pacman -Syu
         echo "-->Instalando el paquete xfsprogs desde pacman..."
         pacman -Sy xfsprogs
         echo "-->Configurando el disco o particion ingresada..."
@@ -95,7 +93,7 @@ function configuracion_ceph(){
 }
 
 function instalando_ceph(){
-        pacman -S ceph
+        pacman -Sy ceph
         echo $1':/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.ceph 0 0' >> /etc/fstab
 }
 
