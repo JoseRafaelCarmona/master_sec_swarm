@@ -76,17 +76,6 @@ function iniciar_redsuperpuesta(){
   echo "--> listo"
 }
 
-function validar(){
-        if [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-                [[ ${$1[0]} -le 255 && ${$1[1]} -le 255 && ${$1[2]} -le 255 && ${$1[3]} -le 255 ]]
-                if [ $? != '0' ]; then
-                        echo 'mal'
-                        exit 1;
-                fi
-        fi
-        echo 'OK'
-}
-
 function install_keepalived(){
          docker run -d --name keepalived --restart=always \
               --cap-add=NET_ADMIN --cap-add=NET_BROADCAST --cap-add=NET_RAW --net=host \
@@ -100,7 +89,6 @@ function install_keepalived(){
 function keepalived(){
         echo '--> Ingresa la direccion virtual:'
         read IP_VIRTUAL
-        validar $IP_VIRTUAL
         echo $IP_VIRTUAL > /root/.ip_virtual
         echo $2 > /root/.ip_nodo
         install_keepalived $1 $2 $IP_VIRTUAL $3

@@ -114,4 +114,4 @@ services:
     secrets:
       - ceph.client.admin.keyring
     deploy:
-      replicas: 3
+      mode: global
