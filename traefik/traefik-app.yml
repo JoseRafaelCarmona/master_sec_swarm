@@ -38,8 +38,6 @@ services:
       labels:
         - "traefik.enable=false"
       mode: global
-      placement:
-        constraints: [node.role == manager]
       restart_policy:
         condition: on-failure
 

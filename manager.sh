@@ -2,7 +2,7 @@
 
 function modoUso(){
     echo 'Para ejecutar el script: manager.sh IP-MANAGER PUNTO-MONTAJE INTERFACE-KEEPALIVED IP-FUTURO-NODO'
-    echo 'Ejemplo: ./manager.sh 192.168.1.1 /dev/sda1'
+    echo 'Ejemplo: ./manager.sh 192.168.1.1 /dev/sda1 ensp03 192.168.1.2'
 }
 
 function validarParams(){
@@ -136,3 +136,5 @@ iniciar_redsuperpuesta
 echo '--> Creando traefik'
 chmod +x ../traefik/install_traefik.sh
 cd ../traefik/ && ./install_traefik.sh
+
+docker service update --replicas-max-per-node=1 ceph_mds

@@ -50,9 +50,6 @@ services:
       - "NETWORK_AUTO_DETECT=4"
     deploy:
       mode: global
-      placement:
-        constraints:
-          - node.role == manager
 
   mgr:
     image: ceph/daemon:master-13b097c-mimic-centos-7-x86_64
