@@ -49,7 +49,7 @@ services:
     environment:
       - "NETWORK_AUTO_DETECT=4"
     deploy:
-      mode: global
+      replicas: 1
 
   mgr:
     image: ceph/daemon:master-13b097c-mimic-centos-7-x86_64
