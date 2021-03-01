@@ -88,13 +88,22 @@ function configuracion_ceph(){
         docker exec -i `docker ps -qf name=ceph_mon` ceph fs new cephfs cephfs_metadata cephfs_data
         docker exec -i `docker ps -qf name=ceph_mon` ceph fs authorize cephfs client.swarm / rw | grep key | awk '{print $3}' > /root/.llave_ceph
         sleep 10
-        sed 's/ //' /root/.llave_ceph > /root/.ceph; rm /root/.llave_ceph
+        sed 's/ //' /root/.llave_ceph > /root/.configsCluster/.ceph_key; rm /root/.llave_ceph
         docker exec -i `docker ps -qf name=ceph_mon` ceph osd pool set cephfs_data nodeep-scrub 1
 }
 
 function instalando_ceph(){
         pacman -Sy ceph
-        echo $1':/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.ceph 0 0' >> /etc/fstab
+        archivo='/root/.configsCluster/ips_cluster'
+        CONTADOR=0
+        while read linea ; do
+                ip add | grep -wom 1 ${linea}
+                if [ $(echo $?) != "0" ]; then
+                        array[$CONTADOR]=${linea}
+                fi
+                let CONTADOR=CONTADOR+1
+        done <<< "`cat $archivo`"
+        echo '${array[@]}:/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.configsCluster/.ceph_key 0 0' >> /etc/fstab
 }
 
 function crear_carpeta_ceph(){
@@ -102,23 +111,23 @@ function crear_carpeta_ceph(){
         mkdir /mnt/ceph
 }
 
+function main(){
+        install_xfsprogs $2
+        obtener_llaves_ceph
+        echo -e "\e[93m INFO: Editaremos el siguiente archivo con la información correspondiente\e[0m";
+        sleep 10
+        nano etc/ceph.conf
+        generando_llaves_swarm
+        sleep 2
+        desplegando_ceph_swarm
+        sleep 30
+        echo "-->Comprobando salud de ceph"
+        comprobar_salud_ceph
+        comprobar_osd
+        configuracion_ceph
+        instalando_ceph
+        crear_carpeta_ceph
+        echo "-->listo"
+}
 
-install_xfsprogs $2
-obtener_llaves_ceph
-echo "-->Es correcto el contenido de este archivo?"
-sleep 5
-#nano etc/ceph.conf
-generando_llaves_swarm
-echo "-->limpiando..."
-rm -r ./var ./etc
-sleep 2
-desplegando_ceph_swarm
-sleep 30
-echo "-->Comprobando salud de ceph"
-comprobar_salud_ceph
-comprobar_osd
-configuracion_ceph
-instalando_ceph $1
-crear_carpeta_ceph
-echo "-->listo"
-
+main $1 $2
