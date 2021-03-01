@@ -49,7 +49,7 @@ services:
     environment:
       - "NETWORK_AUTO_DETECT=4"
     deploy:
-      replicas: 1
+      mode: global
       placement:
         constraints:
           - node.role == manager
@@ -117,6 +117,7 @@ services:
     secrets:
       - ceph.client.admin.keyring
     deploy:
-      replicas: 2
+      mode: global
       placement:
-        max_replicas_per_node: 1
+        constraints:
+          - node.role == manager

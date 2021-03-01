@@ -2,14 +2,13 @@
 
 function modoUso(){
     echo 'Para ejecutar el script: manager.sh IP-MANAGER PUNTO-MONTAJE INTERFACE-KEEPALIVED IP-FUTURO-NODO'
-    echo 'Ejemplo: ./manager.sh 192.168.1.1 /dev/sda1 ensp03 192.168.1.2'
+    echo 'Ejemplo: ./manager.sh /dev/sda1 ensp03'
 }
 
 function validarParams(){
-    [[ ! $# -eq 4 ]] && { echo "Tu número de parámetros no es el correcto"; modoUso; exit 1; }
-    comprobar_ping $1
-    validar_punto_montaje $2
-    validar_interface $3
+    [[ ! $# -eq 2 ]] && { echo -e "\e[31mTu número de parámetros no es el correcto\e[0m"; modoUso; exit 1; }
+    validar_punto_montaje $1
+    validar_interface $2
 }
 
 function comprobar_ping(){
@@ -31,19 +30,19 @@ function validar_punto_montaje(){
 
 function usuario_root(){
     if [ $EUID -eq 0 ]; then
-        echo '   OK'
+        echo -e "\e[32m       OK\e[0m";
     else
-        echo '-->Debes ser el usuario root para realizar esto';
+        echo -e "\e[31mDebes ser el usuario root para realizar esto\e[0m";
         exit 1;
     fi
 }
 
 function validacion(){
     if [ $1 != "0" ]; then
-        echo "-->Mal";
+        echo -e "\e[31m       Mal\e[0m";
         exit 1;
     fi
-    echo '   OK'
+    echo -e "\e[32m       OK\e[0m";
 }
 
 function acceso_internet(){
@@ -73,7 +72,7 @@ function iniciar_swarm(){
 function iniciar_redsuperpuesta(){
   echo "--> Creado red"
   docker network create --driver=overlay --attachable --subnet=172.16.200.0/24 traefik_public
-  echo "--> listo"
+  echo -e "\e[37m       Listo\e[0m";
 }
 
 function install_keepalived(){
@@ -94,35 +93,90 @@ function keepalived(){
         install_keepalived $1 $2 $IP_VIRTUAL $3
 }
 
-validarParams "$@"
-ip_master=$1
-punto_montaje=$2
-interface=$3
-ip_future_worker=$4
+function comprobaciones(){
+        validarParams "$@"
+        echo '-->Comprobando si eres usuario root:'
+        usuario_root
+        echo '-->Comprobando sistema operativo'
+        validar_os
+        echo '-->Acceso a internet'
+        acceso_internet
+        echo '-->Comprobando docker'
+        validar_docker
+}
 
-echo '-->Comprobando si eres usuario root:'
-usuario_root
-echo '-->Comprobando sistema operativo'
-validar_os
-echo '-->Acceso a internet'
-acceso_internet
-echo '-->Comprobando docker'
-validar_docker
-echo '-->Permitir login ssh root'
-permitir_root_login
-echo '-->Obteniendo llave swarm'
-iniciar_swarm "$ip_master"
-echo 'INFO: ya puedes unir los nodos a este swarm'
-echo 'Iniciando la instalacion de ceph..'
-chmod +x ceph/install_ceph.sh
-chmod -R +x ceph/
-cd ceph/ && bash ./install_ceph.sh "$ip_master" "$punto_montaje"
-echo '---> Creando el contenedor de keepalived'
-keepalived "$ip_master" "$ip_future_worker" "$interface"
-echo  '---> Creando red superpuesta'
-iniciar_redsuperpuesta
-echo '--> Creando traefik'
-chmod +x ../traefik/install_traefik.sh
-cd ../traefik/ && ./install_traefik.sh
+function instalacion_ceph(){
+        echo 'Iniciando la instalacion de ceph..'
+        chmod +x ceph/install_ceph.sh
+        chmod -R +x ceph/
+        cd ceph/ && bash ./install_ceph.sh "$1" "$2"
+}
 
-docker service update --replicas-max-per-node=1 ceph_mds
+function instalacion_traefik(){
+        echo  '---> Creando red superpuesta';
+        iniciar_redsuperpuesta;
+        echo '--> Creando traefik';
+        chmod +x ../traefik/install_traefik.sh;
+        cd ../traefik/ && ./install_traefik.sh;
+}
+
+function ips_keepalived(){
+        echo '->¿Que IP quiere que sea el respaldo del contenedor de keepalived?';
+        echo '->el respaldo funciona si el nodo que tiene el contenedor cae, este nodo';
+        echo '->obtiene la dirección IP virtual';
+        echo '1.-$2 o 2.-$3';
+        read $respuesta;
+        if [[ $respuesta > 0 ]] && [[ $respuesta < 3 ]]; then
+            if [[ $respuesta == 1 ]]; then
+                keepalived "$1" "$2" "$4";
+                echo "$2" > /root/.configsCluster/nodo_backup_keepalived
+            else
+                if [[ $respuesta == 2 ]]; then
+                    keepalived "$1" "$3" "$4";
+                    echo "$3" > /root/.configsCluster/nodo_backup_keepalived
+                else
+                    ips_keepalived $1 $2 $3 $4;
+                fi
+            fi
+        fi
+}
+
+function main(){
+        comprobaciones $1 $2;
+        punto_montaje=$1
+        interface=$2
+
+        #aqui falta para validar las direcciones IP
+        echo 'Ingrese las 3 IPS que estaran en el cluster';
+        echo '###########################################';
+        echo '->IP nodo master:';
+        read ip_master;
+        echo '->IP nodo 1';
+        read ip_nodo1;
+        echo '->IP nodo 2';
+        read ip_nodo2;
+        #--------------------------------
+        mkdir /root/.configsCluster
+        echo "$ip_master" > /root/.configsCluster/ips_cluster
+        echo "$ip_nodo1" >> /root/.configsCluster/ips_cluster
+        echo "$ip_nodo3" >> /root/.configsCluster/ips_cluster
+
+        echo '-->Permitir login ssh root';
+        permitir_root_login;
+        echo '-->Obteniendo llave swarm';
+        iniciar_swarm "$ip_master";
+        echo -e "\e[93m INFO: ya puedes unir los nodos a este swarm\e[0m";
+        instalacion_ceph $ip_master $punto_montaje;
+        instalacion_traefik;
+        echo '---> Creando el contenedor de keepalived';
+        ips_keepalived $ip_master $ip_nodo1 $ip_nodo2 $interface
+        docker service update --replicas-max-per-node=1 ceph_mds
+}
+
+main $1 $2
+
+
+
+
+
+
