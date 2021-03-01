@@ -14,7 +14,7 @@ function install_xfsprogs(){
 
 function existe_directorio(){
         if [ -d $1 ]; then
-                echo "-->Error el directorio ya existe: $1";
+                echo -e "\e[31m Error el directorio ya existe: $1\e[0m";
         fi
 }
 
@@ -22,7 +22,7 @@ function existe_archivo(){
         if [ -f $1 ]; then
                 echo "-->El $1 existe";
         else
-                echo "-->ERROR no esta el archivo...";
+                echo -e "\e[31m ERROR no esta el archivo...\e[0m";
                 exit 1;
         fi
 }
@@ -39,7 +39,8 @@ function obtener_llaves_ceph(){
 
         docker exec -it ceph_mon ceph mon getmap -o /etc/ceph/ceph.monmap
         existe_archivo "var/bootstrap-osd/ceph.keyring"
-        echo "-->Deteniendo la imagen de ceph"
+        echo -e "\e[93m INFO: Deteniendo la imagen de ceph\e[0m";
+        echo " "
         docker stop ceph_mon
 }
 
@@ -122,8 +123,8 @@ function main(){
         desplegando_ceph_swarm
         sleep 30
         echo "-->Comprobando salud de ceph"
-        comprobar_salud_ceph
-        comprobar_osd
+        #comprobar_salud_ceph
+        #comprobar_osd
         configuracion_ceph
         instalando_ceph
         crear_carpeta_ceph
