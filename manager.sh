@@ -151,15 +151,25 @@ function main(){
         echo '###########################################';
         echo '->IP nodo master:';
         read ip_master;
+        echo '-> ¿Cual es su hostname?'
+        read hostname_master
         echo '->IP nodo 1';
         read ip_nodo1;
+        echo '-> ¿Cual es su hostname?'
+        read hostname_nodo1
         echo '->IP nodo 2';
         read ip_nodo2;
+        echo '-> ¿Cual es su hostname?'
+        read hostname_nodo2
         #--------------------------------
         mkdir /root/.configsCluster
         echo "$ip_master" > /root/.configsCluster/ips_cluster
         echo "$ip_nodo1" >> /root/.configsCluster/ips_cluster
         echo "$ip_nodo3" >> /root/.configsCluster/ips_cluster
+
+        echo "$hostname_master" > /root/.configsCluster/hostname_cluster
+        echo "$hostname_nodo1" > /root/.configsCluster/hostname_cluster
+        echo "$hostname_nodo2" > /root/.configsCluster/hostname_cluster
 
         echo '-->Permitir login ssh root';
         permitir_root_login;

@@ -124,16 +124,14 @@ function configuracion_archivo_ceph(){
 }
 
 function configuracion_hostname_ceph(){
-        archivo='/root/.configsCluster/ips_cluster'
+        archivo='/root/.configsCluster/hostname_cluster'
         CONTADOR=0
         while read linea ; do
-                ssh root@${linea} hostnamectl > .data
-                hostname=$(cat .data | grep "Static hostname:" | awk '{print $3}')
-                array[$CONTADOR]=$hostname
+                array[$CONTADOR]=${linea}
                 let CONTADOR=CONTADOR+1
         done <<< "`cat $archivo`"
         texto="mon initial members = ${array[@]}"
-        sed -i "s/mon host = mon initial members = ${array[1]}/$texto/" etc/ceph.conf
+        sed -i "s/mon host = mon initial members = ${array[0]}/$texto/" etc/ceph.conf
         echo "mon cluster log file = /var/lib/ceph/mon/$cluster-$id/$channel.log" >> etc/ceph.conf
 }
 
