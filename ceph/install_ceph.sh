@@ -120,7 +120,7 @@ function configuracion_archivo_ceph(){
                 let CONTADOR=CONTADOR+1
         done <<< "`cat $archivo`"
         cadena="mon host = ${array[@]}"
-        sed -i "s/mon host = $1/$texto/" etc/ceph.conf
+        sed -i "s/mon host = $1/$cadena/" etc/ceph.conf
 }
 
 function configuracion_hostname_ceph(){
@@ -140,6 +140,7 @@ function main(){
         obtener_llaves_ceph
         echo -e "\e[93m INFO: Se configurara el archivo ceph.conf de manera automatica \e[0m";
         configuracion_archivo_ceph $1
+        configuracion_hostname_ceph
         generando_llaves_swarm
         sleep 2
         desplegando_ceph_swarm
