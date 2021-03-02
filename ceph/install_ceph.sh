@@ -112,6 +112,16 @@ function crear_carpeta_ceph(){
         mkdir /mnt/ceph
 }
 
+function configuracion_archivo_ceph(){
+        archivo='/root/.configsCluster/ips_cluster'
+        CONTADOR=0
+        while read linea ; do
+                array[$CONTADOR]=${linea}
+                let CONTADOR=CONTADOR+1
+        done <<< "`cat $archivo`"
+
+}
+
 function main(){
         install_xfsprogs $2
         obtener_llaves_ceph
@@ -123,6 +133,7 @@ function main(){
         desplegando_ceph_swarm
         sleep 30
         echo "-->Comprobando salud de ceph"
+        sleep 60
         #comprobar_salud_ceph
         #comprobar_osd
         configuracion_ceph

@@ -88,8 +88,8 @@ function install_keepalived(){
 function keepalived(){
         echo '--> Ingresa la direccion virtual:'
         read IP_VIRTUAL
-        echo $IP_VIRTUAL > /root/.ip_virtual
-        echo $2 > /root/.ip_nodo
+        echo $IP_VIRTUAL > /root/.configsCluster/.ip_virtual
+        echo $2 >/root/.configsCluster/.ip_nodo_backup
         install_keepalived $1 $2 $IP_VIRTUAL $3
 }
 
