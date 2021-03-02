@@ -119,15 +119,29 @@ function configuracion_archivo_ceph(){
                 array[$CONTADOR]=${linea}
                 let CONTADOR=CONTADOR+1
         done <<< "`cat $archivo`"
+        cadena="mon host = ${array[@]}"
+        sed -i "s/mon host = $1/$texto/" etc/ceph.conf
+}
 
+function configuracion_hostname_ceph(){
+        archivo='/root/.configsCluster/ips_cluster'
+        CONTADOR=0
+        while read linea ; do
+                ssh root@${linea} hostnamectl > .data
+                hostname=$(cat .data | grep "Static hostname:" | awk '{print $3}')
+                array[$CONTADOR]=$hostname
+                let CONTADOR=CONTADOR+1
+        done <<< "`cat $archivo`"
+        texto="mon initial members = ${array[@]}"
+        sed -i "s/mon host = mon initial members = ${array[1]}/$texto/" etc/ceph.conf
+        echo "mon cluster log file = /var/lib/ceph/mon/$cluster-$id/$channel.log" >> etc/ceph.conf
 }
 
 function main(){
         install_xfsprogs $2
         obtener_llaves_ceph
-        echo -e "\e[93m INFO: Editaremos el siguiente archivo con la información correspondiente\e[0m";
-        sleep 10
-        nano etc/ceph.conf
+        echo -e "\e[93m INFO: Se configurara el archivo ceph.conf de manera automatica \e[0m";
+        configuracion_archivo_ceph $1
         generando_llaves_swarm
         sleep 2
         desplegando_ceph_swarm
