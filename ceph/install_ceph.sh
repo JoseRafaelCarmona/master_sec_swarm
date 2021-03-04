@@ -131,7 +131,7 @@ function configuracion_hostname_ceph(){
                 let CONTADOR=CONTADOR+1
         done <<< "`cat $archivo`"
         texto="mon initial members = ${array[@]}"
-        sed -i "s/mon host = mon initial members = ${array[0]}/$texto/" etc/ceph.conf
+        sed -i "s/mon initial members = ${array[0]}/$texto/" etc/ceph.conf
         echo 'mon cluster log file = /var/lib/ceph/mon/$cluster-$id/$channel.log' >> etc/ceph.conf
 }
 

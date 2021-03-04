@@ -141,6 +141,18 @@ function ips_keepalived(){
         fi
 }
 
+function agregar_script_montaje(){
+        echo -e "\e[93m INFO: ya puedes unir los nodos a este swarm\e[0m";
+        git clone https://github.com/migu3l-hub/montajeCeph.git
+        mv $PWD/montajeCeph/mountMaster.sh $PWD/montajeCeph/rc.local
+        mv $PWD/montajeCeph/rc.local /etc/
+        echo -e "\n [Install] \n WantedBy=multi-user.target \n \n [Unit] \n Description=/etc/rc.local Compatibility \n ConditionPathExists=/etc/rc.local \n \n [Service] \n Type=simple \n ExecStart=/etc/rc.local start \n TimeoutSec=0 \n StandardOutput=tty \n RemainAfterExit=yes \n SysVStartPriority=99" > /etc/systemd/system/rc-local.service
+        systemctl enable rc-local.service
+        systemctl daemon-reload
+        systemctl start rc-local.service
+}
+
+
 function main(){
         comprobaciones $1 $2;
         punto_montaje=$1
@@ -160,12 +172,13 @@ function main(){
         echo '->IP nodo 2';
         read ip_nodo2;
         echo '-> ¿Cual es su hostname?'
-        read hostname_nodo2
+        read hostname_nodo2;
         #--------------------------------
         mkdir /root/.configsCluster
+        echo $ip_master
         echo "$ip_master" > /root/.configsCluster/ips_cluster
         echo "$ip_nodo1" >> /root/.configsCluster/ips_cluster
-        echo "$ip_nodo3" >> /root/.configsCluster/ips_cluster
+        echo "$ip_nodo2" >> /root/.configsCluster/ips_cluster
 
         echo "$hostname_master" > /root/.configsCluster/hostname_cluster
         echo "$hostname_nodo1" >> /root/.configsCluster/hostname_cluster
@@ -180,6 +193,7 @@ function main(){
         instalacion_traefik;
         echo '---> Creando el contenedor de keepalived';
         ips_keepalived $ip_master $ip_nodo1 $ip_nodo2 $interface
+        agregar_script_montaje
         docker service update --replicas-max-per-node=1 ceph_mds
 }
 
