@@ -104,7 +104,7 @@ function instalando_ceph(){
                 fi
                 let CONTADOR=CONTADOR+1
         done <<< "`cat $archivo`"
-        echo '${array[@]}:/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.configsCluster/.ceph_key 0 0' >> /etc/fstab
+        echo ${array[@]} ":/ /mnt/ceph ceph _netdev,name=swarm,secretfile=/root/.configsCluster/.ceph_key 0 0" >> /etc/fstab
 }
 
 function crear_carpeta_ceph(){
@@ -132,7 +132,7 @@ function configuracion_hostname_ceph(){
         done <<< "`cat $archivo`"
         texto="mon initial members = ${array[@]}"
         sed -i "s/mon host = mon initial members = ${array[0]}/$texto/" etc/ceph.conf
-        echo "mon cluster log file = /var/lib/ceph/mon/$cluster-$id/$channel.log" >> etc/ceph.conf
+        echo 'mon cluster log file = /var/lib/ceph/mon/$cluster-$id/$channel.log' >> etc/ceph.conf
 }
 
 function main(){

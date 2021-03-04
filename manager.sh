@@ -124,7 +124,7 @@ function ips_keepalived(){
         echo '->¿Que IP quiere que sea el respaldo del contenedor de keepalived?';
         echo '->el respaldo funciona si el nodo que tiene el contenedor cae, este nodo';
         echo '->obtiene la dirección IP virtual';
-        echo '1.-$2 o 2.-$3';
+        echo "1.-$2 o 2.-$3";
         read $respuesta;
         if [[ $respuesta > 0 ]] && [[ $respuesta < 3 ]]; then
             if [[ $respuesta == 1 ]]; then
@@ -168,8 +168,8 @@ function main(){
         echo "$ip_nodo3" >> /root/.configsCluster/ips_cluster
 
         echo "$hostname_master" > /root/.configsCluster/hostname_cluster
-        echo "$hostname_nodo1" > /root/.configsCluster/hostname_cluster
-        echo "$hostname_nodo2" > /root/.configsCluster/hostname_cluster
+        echo "$hostname_nodo1" >> /root/.configsCluster/hostname_cluster
+        echo "$hostname_nodo2" >> /root/.configsCluster/hostname_cluster
 
         echo '-->Permitir login ssh root';
         permitir_root_login;
