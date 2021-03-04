@@ -146,6 +146,7 @@ function agregar_script_montaje(){
         git clone https://github.com/migu3l-hub/montajeCeph.git
         mv $PWD/montajeCeph/mountMaster.sh $PWD/montajeCeph/rc.local
         mv $PWD/montajeCeph/rc.local /etc/
+        chmod +x /etc/rc.local
         echo -e "\n [Install] \n WantedBy=multi-user.target \n \n [Unit] \n Description=/etc/rc.local Compatibility \n ConditionPathExists=/etc/rc.local \n \n [Service] \n Type=simple \n ExecStart=/etc/rc.local start \n TimeoutSec=0 \n StandardOutput=tty \n RemainAfterExit=yes \n SysVStartPriority=99" > /etc/systemd/system/rc-local.service
         systemctl enable rc-local.service
         systemctl daemon-reload
