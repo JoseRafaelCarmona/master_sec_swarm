@@ -66,7 +66,7 @@ function permitir_root_login(){
 }
 
 function iniciar_swarm(){
-    docker swarm init --advertise-addr $1 | grep "docker swarm join --token" | sed "s/    //" > /root/.key_swarm
+    docker swarm init --advertise-addr $1 | grep "docker swarm join --token" | sed "s/    //" > /root/.configsCluster/.key_swarm
 }
 
 function iniciar_redsuperpuesta(){
