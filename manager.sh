@@ -153,6 +153,55 @@ function agregar_script_montaje(){
         systemctl start rc-local.service
 }
 
+function validar_direccion_ip(){
+        if [[ $1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+                OIFS=$IFS
+                IFS='.'
+                ip=($1)
+                IFS=$OIFS
+                if [[ ${ip[0]} -le 255 && ${ip[1]} -le 255  && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]; then
+                        echo -e "\e[32m OK\e[0m";
+                else
+                        echo -e "\e[31m Error\e[0m";
+                        exit 1;
+                fi
+        else
+                echo -e "\e[31m Tu seleccion es erronea\e[0m";
+                exit 1;
+        fi
+}
+
+function ips_manager(){
+        ip add | egrep "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}" | awk '{print $2}' > $PDW/.ips_manager.data
+        CONTADOR=1
+        for i in $( cat $PDW/.ips_manager.data ); do
+                echo "$CONTADOR: $i"
+                array_ips_manager[$CONTADOR]=$(echo $i | egrep --only-matching  "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+                let CONTADOR=CONTADOR+1
+        done
+        let CONTADOR=CONTADOR-1
+        seleccionar_ip_manager ${array_ips_manager[@]}
+}
+
+function seleccionar_ip_manager(){
+        echo -e "\e[93m INFO: Selecciona la direccion IP:\e[0m";
+        read num;
+        validar_numSelIP $num $CONTADOR;
+        echo "${array_ips_manager[$num]}" > /root/.configsCluster/ips_cluster;
+        export ip_master=${array_ips_manager[$num]};
+}
+
+function validar_numSelIP(){
+        if [[ $1 -lt 1 ]] || [[ $1 -gt $CONTADOR ]]; then
+                echo -e "\e[31m Tu seleccion es erronea\e[0m";
+                exit 1;
+        fi
+}
+
+function obtener_hostname_manager(){
+        hostname_manager=$(hostnamectl | grep "Static hostname:" | awk '{print $3}');
+        echo "$hostname_manager" > /root/.configsCluster/hostname_cluster;
+}
 
 function main(){
         comprobaciones $1 $2;
@@ -160,28 +209,24 @@ function main(){
         interface=$2
 
         #aqui falta para validar las direcciones IP
-        echo 'Ingrese las 3 IPS que estaran en el cluster';
-        echo '###########################################';
-        echo '->IP nodo master:';
-        read ip_master;
-        echo '-> ¿Cual es su hostname?'
-        read hostname_master
+        mkdir /root/.configsCluster
+        echo 'Obteniendo IP del manager (servidor actual)';
+        ips_manager
+        obtener_hostname_manager
         echo '->IP nodo 1';
         read ip_nodo1;
+        validar_direccion_ip $ip_nodo1
         echo '-> ¿Cual es su hostname?'
         read hostname_nodo1
         echo '->IP nodo 2';
         read ip_nodo2;
+        validar_direccion_ip $ip_nodo2
         echo '-> ¿Cual es su hostname?'
         read hostname_nodo2;
         #--------------------------------
-        mkdir /root/.configsCluster
-        echo $ip_master
-        echo "$ip_master" > /root/.configsCluster/ips_cluster
         echo "$ip_nodo1" >> /root/.configsCluster/ips_cluster
         echo "$ip_nodo2" >> /root/.configsCluster/ips_cluster
 
-        echo "$hostname_master" > /root/.configsCluster/hostname_cluster
         echo "$hostname_nodo1" >> /root/.configsCluster/hostname_cluster
         echo "$hostname_nodo2" >> /root/.configsCluster/hostname_cluster
 
