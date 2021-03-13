@@ -88,8 +88,8 @@ function install_keepalived(){
 function keepalived(){
         echo '--> Ingresa la direccion virtual:'
         read IP_VIRTUAL
-        echo $IP_VIRTUAL > /root/.configsCluster/.ip_virtual
-        echo $2 >/root/.configsCluster/.ip_nodo_backup
+        echo $IP_VIRTUAL > /root/.configsCluster/ip_virtual
+        echo $2 >/root/.configsCluster/ip_nodo_backup
         install_keepalived $1 $2 $IP_VIRTUAL $3
 }
 
@@ -181,6 +181,7 @@ function ips_manager(){
         done
         let CONTADOR=CONTADOR-1
         seleccionar_ip_manager ${array_ips_manager[@]}
+        rm -rf $PDW/.ips_manager.data
 }
 
 function seleccionar_ip_manager(){
