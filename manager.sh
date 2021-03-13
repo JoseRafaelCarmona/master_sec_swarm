@@ -125,7 +125,7 @@ function ips_keepalived(){
         echo '->el respaldo funciona si el nodo que tiene el contenedor cae, este nodo';
         echo '->obtiene la dirección IP virtual';
         echo "1.-$2 o 2.-$3";
-        read $respuesta;
+        read respuesta;
         if [[ $respuesta > 0 ]] && [[ $respuesta < 3 ]]; then
             if [[ $respuesta == 1 ]]; then
                 keepalived "$1" "$2" "$4";
