@@ -130,14 +130,14 @@ function ips_keepalived(){
             if [[ $respuesta == 1 ]]; then
                 keepalived "$1" "$2" "$4";
                 echo "$2" > /root/.configsCluster/nodo_backup_keepalived
-            else
-                if [[ $respuesta == 2 ]]; then
-                    keepalived "$1" "$3" "$4";
-                    echo "$3" > /root/.configsCluster/nodo_backup_keepalived
-                else
-                    ips_keepalived $1 $2 $3 $4;
-                fi
             fi
+            if [[ $respuesta == 2 ]]; then
+                keepalived "$1" "$3" "$4";
+                echo "$3" > /root/.configsCluster/nodo_backup_keepalived
+            fi
+        else
+            ips_keepalived $1 $2 $3 $4;
+
         fi
 }
 
