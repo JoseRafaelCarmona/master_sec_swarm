@@ -128,11 +128,11 @@ function ips_keepalived(){
         read respuesta;
         if [[ $respuesta > 0 ]] && [[ $respuesta < 3 ]]; then
             if [[ $respuesta == 1 ]]; then
-                keepalived "$1" "$2" "$4";
+                keepalived $1 $2 $4
                 echo "$2" > /root/.configsCluster/nodo_backup_keepalived
             fi
             if [[ $respuesta == 2 ]]; then
-                keepalived "$1" "$3" "$4";
+                keepalived $1 $3 $4
                 echo "$3" > /root/.configsCluster/nodo_backup_keepalived
             fi
         else
