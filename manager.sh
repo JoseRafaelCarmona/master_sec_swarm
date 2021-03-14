@@ -90,6 +90,8 @@ function keepalived(){
         read IP_VIRTUAL
         echo $IP_VIRTUAL > /root/.configsCluster/ip_virtual
         echo $2 >/root/.configsCluster/ip_nodo_backup
+        echo $2
+        echo $IP_VIRTUAL
         install_keepalived $1 $2 $IP_VIRTUAL $3
 }
 
@@ -128,12 +130,12 @@ function ips_keepalived(){
         read respuesta;
         if [[ $respuesta > 0 ]] && [[ $respuesta < 3 ]]; then
             if [[ $respuesta == 1 ]]; then
-                keepalived $1 $2 $4
                 echo "$2" > /root/.configsCluster/nodo_backup_keepalived
+                keepalived $1 $2 $4
             fi
             if [[ $respuesta == 2 ]]; then
-                keepalived $1 $3 $4
                 echo "$3" > /root/.configsCluster/nodo_backup_keepalived
+                keepalived $1 $3 $4
             fi
         else
             ips_keepalived $1 $2 $3 $4;
